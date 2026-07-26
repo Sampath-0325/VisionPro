@@ -1,0 +1,48 @@
+# ==============================================================
+# VisionPro Studio — .gitignore
+# ==============================================================
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual Environments
+venv/
+env/
+.venv/
+.env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Project Outputs (generated at runtime)
+outputs/
+reports/*.txt
+reports/*.md
+reports/*.html
+reports/*.csv
+reports/*.json
+logs/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# pytest
+.pytest_cache/
+htmlcov/
+.coverage

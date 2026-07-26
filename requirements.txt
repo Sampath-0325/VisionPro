@@ -1,0 +1,17 @@
+# ==============================================================
+# VisionPro Studio — Dependencies
+# ==============================================================
+
+# Core Image Processing
+opencv-python>=4.8.0
+numpy>=1.24.0
+pillow>=10.0.0
+
+# Visualization & Plotting
+matplotlib>=3.7.0
+
+# Testing
+pytest>=7.4.0
+
+# Utilities
+scikit-image>=0.21.0

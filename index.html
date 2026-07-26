@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisionPro Studio &mdash; Project Report</title>
+    <meta name="description" content="VisionPro Studio: Advanced Image Processing &amp; Pattern Recognition Toolkit. A comprehensive Python pipeline with 40+ computer vision operations. Erasmus+ project by Sampath Malleboina and Mario at Universidad de Almer&iacute;a.">
+    <meta name="author" content="Sampath Malleboina, Mario">
+    <meta name="keywords" content="computer vision, image processing, OpenCV, Python, edge detection, pattern recognition, Erasmus+">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📷</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================ */
+        /*  RESET & BASE                                */
+        /* ============================================ */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a2235;
+            --bg-card-hover: #1e2a42;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #1e293b;
+            --border-light: #334155;
+            --gradient-1: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            --gradient-2: linear-gradient(135deg, #06b6d4, #3b82f6);
+            --gradient-3: linear-gradient(135deg, #10b981, #06b6d4);
+            --gradient-cover: linear-gradient(135deg, #0f172a 0%, #1e1b4b 30%, #0f172a 60%, #172554 100%);
+            --shadow-lg: 0 20px 40px rgba(0,0,0,0.4);
+            --shadow-glow-blue: 0 0 30px rgba(59,130,246,0.15);
+            --shadow-glow-purple: 0 0 30px rgba(139,92,246,0.15);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.8;
+            font-size: 15px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ============================================ */
+        /*  FLOATING NAV BAR                            */
+        /* ============================================ */
+        .floating-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 14, 26, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .floating-nav.visible {
+            transform: translateY(0);
+        }
+
+        .floating-nav .nav-brand {
+            font-size: 15px;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .floating-nav .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-pdf {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn-pdf-primary {
+            background: var(--gradient-1);
+            color: white;
+        }
+
+        .btn-pdf-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(59,130,246,0.4);
+        }
+
+        .btn-pdf-ghost {
+            background: rgba(255,255,255,0.06);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-pdf-ghost:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+        }
+
+        /* ============================================ */
+        /*  COVER PAGE                                  */
+        /* ============================================ */
+        .cover-page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--gradient-cover);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            padding: 40px 20px;
+            page-break-after: always;
+        }
+
+        .cover-page::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(59,130,246,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139,92,246,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(6,182,212,0.05) 0%, transparent 50%);
+            animation: coverGlow 15s ease-in-out infinite alternate;
+        }
+
+        @keyframes coverGlow {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(-20px, -20px) rotate(3deg); }
+        }
+
+        .cover-badge {
+            position: relative;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(59,130,246,0.1);
+            border: 1px solid rgba(59,130,246,0.25);
+            border-radius: 50px;
+            padding: 8px 24px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-blue);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+        }
+
+        .cover-badge::before {
+            content: '\1F1EA\1F1FA';
+            font-size: 16px;
+        }
+
+        .cover-title {
+            position: relative;
+            z-index: 1;
+            font-size: clamp(42px, 6vw, 72px);
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff 0%, #93c5fd 40%, #c4b5fd 70%, #67e8f9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            letter-spacing: -2px;
+        }
+
+        .cover-subtitle {
+            position: relative;
+            z-index: 1;
+            font-size: clamp(18px, 2.5vw, 26px);
+            font-weight: 300;
+            color: var(--text-secondary);
+            margin-bottom: 50px;
+            max-width: 700px;
+        }
+
+        .cover-meta {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .cover-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        .cover-meta-row strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .cover-meta-label {
+            display: inline-block;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 4px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .cover-divider {
+            position: relative;
+            z-index: 1;
+            width: 80px;
+            height: 3px;
+            background: var(--gradient-1);
+            border-radius: 3px;
+            margin: 35px 0;
+        }
+
+        .cover-university {
+            position: relative;
+            z-index: 1;
+            margin-top: 20px;
+            padding: 20px 40px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+        }
+
+        .cover-university-name {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--accent-amber), var(--accent-rose));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
+        }
+
+        .cover-university-loc {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .cover-date {
+            position: relative;
+            z-index: 1;
+            margin-top: 30px;
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .cover-actions {
+            position: relative;
+            z-index: 1;
+            margin-top: 40px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .cover-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .cover-btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            box-shadow: 0 4px 20px rgba(59,130,246,0.3);
+        }
+
+        .cover-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(59,130,246,0.5);
+        }
+
+        .cover-btn-outline {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .cover-btn-outline:hover {
+            border-color: rgba(255,255,255,0.3);
+            color: var(--text-primary);
+        }
+
+        /* ============================================ */
+        /*  MAIN CONTENT                                */
+        /* ============================================ */
+        .main-content {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 60px 32px 120px;
+        }
+
+        /* ============================================ */
+        /*  TABLE OF CONTENTS                           */
+        /* ============================================ */
+        .toc {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 60px;
+            box-shadow: var(--shadow-glow-blue);
+        }
+
+        .toc h2 {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--accent-cyan);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toc ol {
+            list-style: none;
+            counter-reset: toc-counter;
+        }
+
+        .toc ol li {
+            counter-increment: toc-counter;
+            margin-bottom: 6px;
+        }
+
+        .toc ol li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        .toc ol li a::before {
+            content: counter(toc-counter, decimal-leading-zero);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-blue);
+            background: rgba(59,130,246,0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            min-width: 36px;
+            text-align: center;
+        }
+
+        .toc ol li a:hover {
+            background: rgba(59,130,246,0.06);
+            color: var(--text-primary);
+        }
+
+        /* ============================================ */
+        /*  SECTIONS                                    */
+        /* ============================================ */
+        .section {
+            margin-bottom: 70px;
+            scroll-margin-top: 70px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 28px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .section-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: var(--gradient-1);
+            color: white;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .section h2 {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+
+        .section h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            margin-top: 36px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h3::before {
+            content: '\25B8';
+            color: var(--accent-blue);
+            font-size: 16px;
+        }
+
+        .section h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent-purple);
+            margin-top: 24px;
+            margin-bottom: 10px;
+        }
+
+        .section p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            text-align: justify;
+        }
+
+        .section p strong {
+            color: var(--text-primary);
+        }
+
+        /* ============================================ */
+        /*  INFO CARDS                                  */
+        /* ============================================ */
+        .info-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 28px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            border-color: var(--border-light);
+            box-shadow: var(--shadow-glow-blue);
+        }
+
+        .info-card.highlight { border-left: 4px solid var(--accent-blue); }
+        .info-card.accent-green { border-left: 4px solid var(--accent-green); }
+        .info-card.accent-purple { border-left: 4px solid var(--accent-purple); }
+        .info-card.accent-amber { border-left: 4px solid var(--accent-amber); }
+
+        /* ============================================ */
+        /*  CODE BLOCKS                                 */
+        /* ============================================ */
+        .code-block {
+            background: #0d1117;
+            border: 1px solid #21262d;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: attr(data-lang);
+            position: absolute;
+            top: 10px;
+            right: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(255,255,255,0.05);
+            padding: 2px 10px;
+            border-radius: 4px;
+        }
+
+        .code-block code, pre code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #e6edf3;
+        }
+
+        pre { margin: 0; white-space: pre; }
+
+        .code-inline {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            background: rgba(59,130,246,0.1);
+            color: var(--accent-blue);
+            padding: 2px 8px;
+            border-radius: 5px;
+            border: 1px solid rgba(59,130,246,0.15);
+        }
+
+        .kw { color: #ff7b72; } .fn { color: #d2a8ff; } .str { color: #a5d6ff; }
+        .cm { color: #8b949e; font-style: italic; } .num { color: #79c0ff; }
+        .op { color: #ff7b72; } .cls { color: #ffa657; }
+
+        /* ============================================ */
+        /*  IMAGE DISPLAYS                              */
+        /* ============================================ */
+        .image-showcase {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            margin: 24px 0;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .image-showcase img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .image-showcase .caption {
+            padding: 16px 24px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-align: center;
+            border-top: 1px solid var(--border);
+            background: rgba(0,0,0,0.2);
+        }
+
+        .image-showcase .caption strong { color: var(--accent-cyan); }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 24px 0;
+        }
+
+        .image-grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .image-grid .image-showcase,
+        .image-grid-3 .image-showcase { margin: 0; }
+
+        /* ============================================ */
+        /*  TABLES                                      */
+        /* ============================================ */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 20px 0;
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        thead th {
+            background: rgba(59,130,246,0.1);
+            color: var(--accent-blue);
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 14px 20px;
+            text-align: left;
+            border-bottom: 2px solid var(--border);
+        }
+
+        tbody td {
+            padding: 14px 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: rgba(59,130,246,0.03); }
+        tbody td:first-child { font-weight: 600; color: var(--text-primary); }
+
+        /* ============================================ */
+        /*  BADGES                                      */
+        /* ============================================ */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-blue { background: rgba(59,130,246,0.15); color: var(--accent-blue); }
+        .badge-green { background: rgba(16,185,129,0.15); color: var(--accent-green); }
+        .badge-purple { background: rgba(139,92,246,0.15); color: var(--accent-purple); }
+        .badge-cyan { background: rgba(6,182,212,0.15); color: var(--accent-cyan); }
+        .badge-amber { background: rgba(245,158,11,0.15); color: var(--accent-amber); }
+        .badge-rose { background: rgba(244,63,94,0.15); color: var(--accent-rose); }
+
+        /* ============================================ */
+        /*  ARCHITECTURE DIAGRAM                        */
+        /* ============================================ */
+        .arch-diagram {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 40px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .arch-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 20px 0;
+        }
+
+        .arch-node {
+            background: rgba(59,130,246,0.1);
+            border: 1px solid rgba(59,130,246,0.25);
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+
+        .arch-node.green { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.25); color: var(--accent-green); }
+        .arch-node.purple { background: rgba(139,92,246,0.1); border-color: rgba(139,92,246,0.25); color: var(--accent-purple); }
+        .arch-node.amber { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.25); color: var(--accent-amber); }
+        .arch-node.cyan { background: rgba(6,182,212,0.1); border-color: rgba(6,182,212,0.25); color: var(--accent-cyan); }
+
+        .arch-arrow { color: var(--text-muted); font-size: 20px; }
+
+        /* ============================================ */
+        /*  LISTS                                       */
+        /* ============================================ */
+        ul, ol { padding-left: 24px; margin-bottom: 16px; }
+        ul li, ol li { color: var(--text-secondary); margin-bottom: 6px; line-height: 1.7; }
+        ul li strong, ol li strong { color: var(--text-primary); }
+
+        /* ============================================ */
+        /*  GITHUB LINK                                 */
+        /* ============================================ */
+        .github-placeholder {
+            background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(139,92,246,0.08));
+            border: 2px dashed rgba(59,130,246,0.3);
+            border-radius: 14px;
+            padding: 24px 32px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .github-placeholder a {
+            color: var(--accent-blue);
+            font-weight: 700;
+            font-size: 16px;
+            text-decoration: none;
+        }
+
+        .github-placeholder p {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-top: 6px;
+        }
+
+        /* ============================================ */
+        /*  FOOTER                                      */
+        /* ============================================ */
+        .report-footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid var(--border);
+            margin-top: 80px;
+        }
+
+        .report-footer p {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        /* ============================================ */
+        /*  STAT CARDS                                  */
+        /* ============================================ */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow-blue);
+        }
+
+        .stat-card .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-card .stat-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        /* ============================================ */
+        /*  FORMULA                                     */
+        /* ============================================ */
+        .formula-block {
+            background: rgba(139,92,246,0.05);
+            border: 1px solid rgba(139,92,246,0.15);
+            border-radius: 12px;
+            padding: 20px 28px;
+            margin: 16px 0;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 15px;
+            color: var(--accent-purple);
+            letter-spacing: 0.5px;
+        }
+
+        /* ============================================ */
+        /*  RESPONSIVE                                  */
+        /* ============================================ */
+        @media (max-width: 768px) {
+            .stat-grid { grid-template-columns: repeat(2, 1fr); }
+            .image-grid { grid-template-columns: 1fr; }
+            .image-grid-3 { grid-template-columns: 1fr; }
+            .main-content { padding: 30px 16px 80px; }
+            .cover-actions { flex-direction: column; }
+        }
+
+        /* ============================================ */
+        /*  PRINT / PDF STYLES                          */
+        /* ============================================ */
+        @media print {
+            *, *::before, *::after {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
+            body {
+                background: var(--bg-primary) !important;
+                font-size: 11pt;
+                line-height: 1.6;
+            }
+
+            .floating-nav,
+            .cover-actions,
+            .no-print {
+                display: none !important;
+            }
+
+            .cover-page {
+                min-height: auto;
+                padding: 80px 40px;
+                page-break-after: always;
+            }
+
+            .main-content {
+                padding: 20px 30px;
+            }
+
+            .section {
+                page-break-inside: avoid;
+                margin-bottom: 40px;
+            }
+
+            .image-showcase,
+            .info-card,
+            .code-block,
+            table,
+            .arch-diagram {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            .image-showcase img {
+                max-height: 400px;
+                object-fit: contain;
+            }
+
+            .image-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+
+            .image-grid-3 {
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 10px;
+            }
+
+            .stat-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            a { color: var(--accent-blue) !important; }
+
+            .toc { page-break-after: always; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============================================ -->
+<!-- FLOATING NAV BAR                             -->
+<!-- ============================================ -->
+<nav class="floating-nav" id="floatingNav">
+    <span class="nav-brand">&#x1F4F7; VisionPro Studio &mdash; Report</span>
+    <div class="nav-actions">
+        <a href="#abstract" class="btn-pdf btn-pdf-ghost">&#x2191; Top</a>
+        <button class="btn-pdf btn-pdf-primary" onclick="window.print()">&#x1F4E5; Download PDF</button>
+    </div>
+</nav>
+
+<!-- ============================================ -->
+<!-- COVER PAGE                                   -->
+<!-- ============================================ -->
+<div class="cover-page" id="cover">
+    <div class="cover-badge">Erasmus+ Student Mobility Program</div>
+    
+    <h1 class="cover-title">VisionPro Studio</h1>
+    <p class="cover-subtitle">
+        Advanced Image Processing &amp; Pattern Recognition Toolkit &mdash; A Comprehensive Python Pipeline with 40+ Computer Vision Operations
+    </p>
+
+    <div class="cover-divider"></div>
+
+    <div class="cover-meta">
+        <div class="cover-meta-row">
+            <span class="cover-meta-label">Course</span>
+            <span><strong>AI Vision with Python</strong> &mdash; An Introduction to Pattern Recognition &amp; Image Processing</span>
+        </div>
+        <div class="cover-meta-row">
+            <span class="cover-meta-label">Professor</span>
+            <span><strong>Prof. Ashraf Nijam</strong></span>
+        </div>
+        <div class="cover-meta-row">
+            <span class="cover-meta-label">Authors</span>
+            <span><strong>Sampath Malleboina</strong> (India) &amp; <strong>Mario</strong> (Albania)</span>
+        </div>
+    </div>
+
+    <div class="cover-university">
+        <div class="cover-university-name">Universidad de Almer&iacute;a</div>
+        <div class="cover-university-loc">Almer&iacute;a, Spain &#x1F1EA;&#x1F1F8;</div>
+    </div>
+
+    <div class="cover-date">July 2026</div>
+
+    <div class="cover-actions">
+        <button class="cover-btn cover-btn-primary" onclick="window.print()">&#x1F4C4; Download as PDF</button>
+        <a href="#abstract" class="cover-btn cover-btn-outline">&#x2193; Read Report</a>
+    </div>
+</div>
+
+<!-- ============================================ -->
+<!-- MAIN CONTENT                                 -->
+<!-- ============================================ -->
+<div class="main-content">
+
+    <!-- TABLE OF CONTENTS -->
+    <div class="toc">
+        <h2>&#x1F4D1; Table of Contents</h2>
+        <ol>
+            <li><a href="#abstract">Abstract</a></li>
+            <li><a href="#introduction">Introduction &amp; Motivation</a></li>
+            <li><a href="#objectives">Project Objectives</a></li>
+            <li><a href="#tech-stack">Technology Stack &amp; Dependencies</a></li>
+            <li><a href="#architecture">System Architecture</a></li>
+            <li><a href="#preprocessing">Module 1 &mdash; Image Preprocessing</a></li>
+            <li><a href="#filters">Module 2 &mdash; Image Filters &amp; Artistic Effects</a></li>
+            <li><a href="#edge-detection">Module 3 &mdash; Edge Detection</a></li>
+            <li><a href="#thresholding">Module 4 &mdash; Thresholding Techniques</a></li>
+            <li><a href="#morphology">Module 5 &mdash; Morphological Operations</a></li>
+            <li><a href="#contours">Module 6 &mdash; Contour Detection &amp; Analysis</a></li>
+            <li><a href="#color-analysis">Module 7 &mdash; Color Analysis</a></li>
+            <li><a href="#metrics">Module 8 &mdash; Image Quality Metrics</a></li>
+            <li><a href="#visualization">Visualization &amp; Dashboards</a></li>
+            <li><a href="#execution">Execution &amp; Results</a></li>
+            <li><a href="#source-code">Source Code Repository</a></li>
+            <li><a href="#conclusion">Conclusion &amp; Learnings</a></li>
+            <li><a href="#references">References</a></li>
+        </ol>
+    </div>
+
+    <!-- 01. ABSTRACT -->
+    <div class="section" id="abstract">
+        <div class="section-header">
+            <div class="section-number">01</div>
+            <h2>Abstract</h2>
+        </div>
+        <div class="info-card highlight">
+            <p>
+                <strong>VisionPro Studio</strong> is a professional-grade image processing and analysis toolkit built entirely in Python. Developed as part of the <em>AI Vision with Python: An Introduction to Pattern Recognition &amp; Image Processing</em> course under the Erasmus+ student mobility program at the <strong>Universidad de Almer&iacute;a, Spain</strong>, this project demonstrates a deep, hands-on understanding of classical computer vision algorithms &mdash; from fundamental pixel-level manipulations to advanced pattern recognition techniques.
+            </p>
+            <p>
+                The toolkit implements over <strong>40 distinct image processing operations</strong> organized into eight core modules: preprocessing, filtering, edge detection, thresholding, morphological processing, contour analysis, color analysis, and image quality metrics. Each module is designed with clean, modular architecture, allowing individual operations to be composed into flexible pipelines that process single images or entire directories in batch mode.
+            </p>
+            <p>
+                The system further provides automated report generation in five formats (TXT, Markdown, HTML, CSV, JSON) and produces publication-quality visualization dashboards with a professional dark-themed aesthetic. This report documents the theoretical foundations, implementation strategy, and execution results of every module in the toolkit.
+            </p>
+        </div>
+        <div class="stat-grid">
+            <div class="stat-card"><div class="stat-value">40+</div><div class="stat-label">Operations</div></div>
+            <div class="stat-card"><div class="stat-value">8</div><div class="stat-label">Core Modules</div></div>
+            <div class="stat-card"><div class="stat-value">17</div><div class="stat-label">Source Files</div></div>
+            <div class="stat-card"><div class="stat-value">5</div><div class="stat-label">Report Formats</div></div>
+        </div>
+    </div>
+
+    <!-- 02. INTRODUCTION -->
+    <div class="section" id="introduction">
+        <div class="section-header">
+            <div class="section-number">02</div>
+            <h2>Introduction &amp; Motivation</h2>
+        </div>
+        <p>Computer vision lies at the heart of modern artificial intelligence &mdash; empowering machines to perceive, interpret, and make decisions based on visual data. From autonomous vehicles that read road signs to medical imaging systems that detect tumors, the algorithms we study in pattern recognition and image processing form the fundamental building blocks of these transformative technologies.</p>
+        <p>As international students participating in the <strong>Erasmus+ student mobility program</strong> &mdash; Sampath Malleboina from India and Mario from Albania &mdash; we had the extraordinary opportunity to pursue this discipline at the <strong>Universidad de Almer&iacute;a</strong> in Spain, under the expert guidance of <strong>Prof. Ashraf Nijam</strong>. This cross-cultural academic experience inspired us to go beyond classroom assignments and build something comprehensive &mdash; a toolkit that not only demonstrates what we learned, but also serves as a practical, reusable resource.</p>
+        <p><strong>VisionPro Studio</strong> was born from this ambition. Rather than writing isolated scripts for individual techniques, we engineered a complete, production-quality system that ties together every major concept from the course &mdash; preprocessing, spatial and frequency domain filtering, edge detection, segmentation, morphological analysis, shape detection, and quantitative image assessment &mdash; into a unified, well-documented pipeline.</p>
+        <div class="info-card accent-green">
+            <p>&#x1F4A1; <strong>Our Philosophy:</strong> We believe the best way to truly understand an algorithm is to implement it from scratch, see it transform real images, and then compare results across multiple techniques. VisionPro Studio is designed around this principle &mdash; every operation produces visual output that can be inspected, compared, and analyzed.</p>
+        </div>
+    </div>
+
+    <!-- 03. OBJECTIVES -->
+    <div class="section" id="objectives">
+        <div class="section-header">
+            <div class="section-number">03</div>
+            <h2>Project Objectives</h2>
+        </div>
+        <p>The primary objectives guiding the development of VisionPro Studio were:</p>
+        <ol>
+            <li><strong>Comprehensive Coverage:</strong> Implement every major image processing technique covered in the course &mdash; from grayscale conversion to contour-based shape analysis &mdash; in a single, coherent system.</li>
+            <li><strong>Modular Design:</strong> Structure the codebase so that each category of operations (preprocessing, filters, edge detection, etc.) lives in its own module, following clean object-oriented design principles.</li>
+            <li><strong>Pipeline Architecture:</strong> Build a central processing engine that can orchestrate all modules, track execution timing, handle errors gracefully, and collect results for downstream use.</li>
+            <li><strong>Visual Evidence:</strong> Generate rich visualizations &mdash; side-by-side comparisons, histograms, dashboards, and metrics overlays &mdash; so that the effect of each algorithm is clearly visible.</li>
+            <li><strong>Automated Reporting:</strong> Produce detailed reports in multiple formats to document processing results, image statistics, and quality metrics.</li>
+            <li><strong>Batch Processing:</strong> Support processing of entire image directories, enabling scalable analysis across datasets.</li>
+            <li><strong>Professional Quality:</strong> Write clean, well-documented Python code with proper docstrings, type hints in documentation, and a consistent coding style suitable for academic and professional review.</li>
+        </ol>
+    </div>
+
+    <!-- 04. TECH STACK -->
+    <div class="section" id="tech-stack">
+        <div class="section-header">
+            <div class="section-number">04</div>
+            <h2>Technology Stack &amp; Dependencies</h2>
+        </div>
+        <p>VisionPro Studio is built on a carefully chosen set of industry-standard Python libraries:</p>
+        <table>
+            <thead><tr><th>Library</th><th>Version</th><th>Purpose</th></tr></thead>
+            <tbody>
+                <tr><td><span class="badge badge-blue">Python</span></td><td>3.9+</td><td>Core programming language</td></tr>
+                <tr><td><span class="badge badge-green">OpenCV</span></td><td>&ge; 4.8.0</td><td>Primary image processing engine &mdash; provides all core CV algorithms</td></tr>
+                <tr><td><span class="badge badge-purple">NumPy</span></td><td>&ge; 1.24.0</td><td>Numerical array operations, kernel definitions, pixel math</td></tr>
+                <tr><td><span class="badge badge-cyan">Matplotlib</span></td><td>&ge; 3.7.0</td><td>Visualization, histograms, dashboards, and charts</td></tr>
+                <tr><td><span class="badge badge-amber">Pillow</span></td><td>&ge; 10.0.0</td><td>Extended image format support and EXIF metadata extraction</td></tr>
+                <tr><td><span class="badge badge-rose">scikit-image</span></td><td>&ge; 0.21.0</td><td>Advanced image processing utilities</td></tr>
+                <tr><td><span class="badge badge-blue">pytest</span></td><td>&ge; 7.4.0</td><td>Test framework for unit testing all modules</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 05. ARCHITECTURE -->
+    <div class="section" id="architecture">
+        <div class="section-header">
+            <div class="section-number">05</div>
+            <h2>System Architecture</h2>
+        </div>
+        <p>VisionPro Studio follows a <strong>layered pipeline architecture</strong>. At the top, the CLI application (<span class="code-inline">app.py</span>) parses user arguments and delegates to the central <span class="code-inline">ProcessingPipeline</span> engine. This engine coordinates eight specialized processing modules &mdash; each a standalone class with static methods &mdash; and feeds results to the visualization and report generation layers.</p>
+        <div class="arch-diagram">
+            <p style="font-size:13px; color: var(--text-muted); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600;">Data Flow Architecture</p>
+            <div class="arch-flow">
+                <div class="arch-node">&#x1F4C2; Input Image</div>
+                <span class="arch-arrow">&rarr;</span>
+                <div class="arch-node cyan">ImageLoader</div>
+                <span class="arch-arrow">&rarr;</span>
+                <div class="arch-node green">ProcessingPipeline</div>
+            </div>
+            <div style="margin: 10px 0; color: var(--text-muted);">&darr; orchestrates &darr;</div>
+            <div class="arch-flow">
+                <div class="arch-node">Preprocessing</div>
+                <div class="arch-node">Filters</div>
+                <div class="arch-node">Edge Detection</div>
+                <div class="arch-node">Thresholding</div>
+            </div>
+            <div class="arch-flow" style="margin-top: 8px;">
+                <div class="arch-node">Morphology</div>
+                <div class="arch-node">Contours</div>
+                <div class="arch-node">Color Analysis</div>
+                <div class="arch-node">Metrics</div>
+            </div>
+            <div style="margin: 10px 0; color: var(--text-muted);">&darr; results &darr;</div>
+            <div class="arch-flow">
+                <div class="arch-node purple">Visualization</div>
+                <span class="arch-arrow">&rarr;</span>
+                <div class="arch-node amber">Report Generator</div>
+                <span class="arch-arrow">&rarr;</span>
+                <div class="arch-node cyan">&#x1F4CA; Output</div>
+            </div>
+        </div>
+        <h3>Project File Structure</h3>
+        <div class="code-block" data-lang="tree">
+<pre><code>VisionPro-Studio/
+&#x251C;&#x2500;&#x2500; app.py                      &larr; CLI entry point &amp; orchestration
+&#x251C;&#x2500;&#x2500; requirements.txt            &larr; Python dependencies
+&#x251C;&#x2500;&#x2500; setup.py                    &larr; Package installation config
+&#x2502;
+&#x251C;&#x2500;&#x2500; src/                        &larr; Core processing modules
+&#x2502;   &#x251C;&#x2500;&#x2500; config.py               &larr; Centralized configuration
+&#x2502;   &#x251C;&#x2500;&#x2500; image_loader.py         &larr; Image I/O, GIF support, EXIF
+&#x2502;   &#x251C;&#x2500;&#x2500; preprocessing.py        &larr; Grayscale, histogram eq., brightness
+&#x2502;   &#x251C;&#x2500;&#x2500; filters.py              &larr; Blur, sharpen, artistic effects
+&#x2502;   &#x251C;&#x2500;&#x2500; edge_detection.py       &larr; Sobel, Canny, Scharr, Prewitt, Roberts
+&#x2502;   &#x251C;&#x2500;&#x2500; thresholding.py         &larr; Binary, adaptive, Otsu methods
+&#x2502;   &#x251C;&#x2500;&#x2500; morphology.py           &larr; Erosion, dilation, opening, closing
+&#x2502;   &#x251C;&#x2500;&#x2500; contour_detection.py    &larr; Find, draw, analyze contours
+&#x2502;   &#x251C;&#x2500;&#x2500; color_analysis.py       &larr; K-Means color extraction, palette
+&#x2502;   &#x251C;&#x2500;&#x2500; metrics.py              &larr; PSNR, SSIM, entropy, sharpness
+&#x2502;   &#x251C;&#x2500;&#x2500; processing_pipeline.py  &larr; Central pipeline engine
+&#x2502;   &#x251C;&#x2500;&#x2500; visualization.py        &larr; Charts, dashboards (dark theme)
+&#x2502;   &#x251C;&#x2500;&#x2500; report_generator.py     &larr; TXT/MD/HTML/CSV/JSON reports
+&#x2502;   &#x251C;&#x2500;&#x2500; batch_processor.py      &larr; Multi-image batch processing
+&#x2502;   &#x251C;&#x2500;&#x2500; logger.py               &larr; Colored logging with file output
+&#x2502;   &#x2514;&#x2500;&#x2500; utils.py                &larr; Helpers &amp; utilities
+&#x2502;
+&#x251C;&#x2500;&#x2500; tests/                      &larr; Automated test suite (pytest)
+&#x251C;&#x2500;&#x2500; images/                     &larr; Input images
+&#x251C;&#x2500;&#x2500; outputs/                    &larr; All processed results
+&#x251C;&#x2500;&#x2500; reports/                    &larr; Generated reports
+&#x2514;&#x2500;&#x2500; logs/                       &larr; Execution logs</code></pre>
+        </div>
+        <p>Each processing module is implemented as a class with <span class="code-inline">@staticmethod</span> methods, ensuring they remain <strong>stateless and reusable</strong>. The <span class="code-inline">ProcessingPipeline</span> class is the only stateful component &mdash; it holds the original image, accumulated results, timing data, and any errors encountered during processing.</p>
+    </div>
+
+    <!-- 06. PREPROCESSING -->
+    <div class="section" id="preprocessing">
+        <div class="section-header">
+            <div class="section-number">06</div>
+            <h2>Module 1 &mdash; Image Preprocessing</h2>
+        </div>
+        <p>Preprocessing is the essential first step in any image processing pipeline. It transforms raw input images into a form that is more suitable for analysis. Our preprocessing module includes <strong>grayscale conversion, histogram equalization, CLAHE (Contrast Limited Adaptive Histogram Equalization), brightness adjustment, contrast adjustment, and gamma correction</strong>.</p>
+        <h3>Grayscale Conversion</h3>
+        <p>Converting a color image to grayscale reduces a 3-channel (BGR) image to a single intensity channel. This simplification is required by many algorithms (edge detection, thresholding, morphology) that operate on intensity values alone.</p>
+        <div class="formula-block">Gray = 0.299 &times; R + 0.587 &times; G + 0.114 &times; B</div>
+        <h3>Histogram Equalization &amp; CLAHE</h3>
+        <p><strong>Histogram Equalization</strong> redistributes pixel intensities to span the full 0&ndash;255 range, improving contrast. <strong>CLAHE</strong> solves over-amplification by dividing the image into small tiles and equalizing each one independently, with a clip limit to prevent noise amplification.</p>
+        <div class="code-block" data-lang="Python">
+<pre><code><span class="cm"># Standard Histogram Equalization</span>
+equalized = cv2.equalizeHist(gray)
+
+<span class="cm"># CLAHE &mdash; Contrast Limited Adaptive Histogram Equalization</span>
+clahe = cv2.createCLAHE(clipLimit=<span class="num">2.0</span>, tileGridSize=(<span class="num">8</span>, <span class="num">8</span>))
+result = clahe.apply(gray)</code></pre>
+        </div>
+        <h3>Output &mdash; Before / After Comparison</h3>
+        <div class="image-showcase">
+            <img src="outputs/comparison/before_after.png" alt="Before and After">
+            <div class="caption"><strong>Figure 1:</strong> Side-by-side comparison of the original color image and its grayscale conversion</div>
+        </div>
+        <div class="image-grid">
+            <div class="image-showcase">
+                <img src="outputs/histogram/histogram_equalization.jpg" alt="Histogram Equalization">
+                <div class="caption"><strong>Figure 2a:</strong> Histogram Equalization</div>
+            </div>
+            <div class="image-showcase">
+                <img src="outputs/histogram/clahe.jpg" alt="CLAHE">
+                <div class="caption"><strong>Figure 2b:</strong> CLAHE &mdash; localized contrast enhancement</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 07. FILTERS -->
+    <div class="section" id="filters">
+        <div class="section-header">
+            <div class="section-number">07</div>
+            <h2>Module 2 &mdash; Image Filters &amp; Artistic Effects</h2>
+        </div>
+        <p>The filters module is the richest module in VisionPro Studio, implementing <strong>15 different filters</strong> ranging from classical smoothing operations to creative artistic effects.</p>
+        <h3>Smoothing Filters</h3>
+        <ul>
+            <li><strong>Gaussian Blur:</strong> Applies a weighted average using a Gaussian kernel &mdash; gives more weight to center pixels.</li>
+            <li><strong>Median Filter:</strong> Replaces each pixel with the median of its neighborhood. Exceptional at removing salt-and-pepper noise.</li>
+            <li><strong>Bilateral Filter:</strong> Smooths flat regions but preserves sharp edges by considering both spatial proximity and intensity similarity.</li>
+            <li><strong>Box Blur:</strong> Simple unweighted average &mdash; each neighbor contributes equally.</li>
+        </ul>
+        <h3>Sharpening &amp; Enhancement</h3>
+        <div class="code-block" data-lang="Python">
+<pre><code><span class="cm"># Sharpening Kernel</span>
+kernel = np.array([[-<span class="num">1</span>, -<span class="num">1</span>, -<span class="num">1</span>],
+                   [-<span class="num">1</span>,  <span class="num">9</span>, -<span class="num">1</span>],
+                   [-<span class="num">1</span>, -<span class="num">1</span>, -<span class="num">1</span>]])
+sharpened = cv2.filter2D(image, -<span class="num">1</span>, kernel)
+
+<span class="cm"># Unsharp Mask</span>
+blurred = cv2.GaussianBlur(image, (<span class="num">0</span>, <span class="num">0</span>), sigma=<span class="num">1.0</span>)
+sharpened = cv2.addWeighted(image, <span class="num">1.0</span> + strength, blurred, -strength, <span class="num">0</span>)</code></pre>
+        </div>
+        <h3>Artistic Effects</h3>
+        <ul>
+            <li><strong>Pencil Sketch:</strong> Combines grayscale conversion, inversion, Gaussian blur, and pixel-wise division.</li>
+            <li><strong>Cartoon Effect:</strong> Iterative bilateral filtering for color smoothing and adaptive thresholding for bold edge lines.</li>
+            <li><strong>Sepia Tone:</strong> Applies a color transformation matrix to simulate vintage photography.</li>
+            <li><strong>Vignette:</strong> Creates darkened edges using a 2D Gaussian mask.</li>
+            <li><strong>Color Quantization:</strong> Reduces the number of distinct colors using K-Means clustering.</li>
+        </ul>
+        <div class="image-grid-3">
+            <div class="image-showcase"><img src="outputs/sharpen/sketch.jpg" alt="Pencil Sketch"><div class="caption"><strong>Pencil Sketch</strong></div></div>
+            <div class="image-showcase"><img src="outputs/sharpen/cartoon.jpg" alt="Cartoon"><div class="caption"><strong>Cartoon Effect</strong></div></div>
+            <div class="image-showcase"><img src="outputs/sharpen/sepia.jpg" alt="Sepia"><div class="caption"><strong>Sepia Tone</strong></div></div>
+        </div>
+        <div class="image-grid">
+            <div class="image-showcase"><img src="outputs/sharpen/sharpen.jpg" alt="Sharpened"><div class="caption"><strong>Sharpened</strong></div></div>
+            <div class="image-showcase"><img src="outputs/gaussian/gaussian.jpg" alt="Gaussian Blur"><div class="caption"><strong>Gaussian Blur</strong></div></div>
+        </div>
+    </div>
+
+    <!-- 08. EDGE DETECTION -->
+    <div class="section" id="edge-detection">
+        <div class="section-header">
+            <div class="section-number">08</div>
+            <h2>Module 3 &mdash; Edge Detection</h2>
+        </div>
+        <p>Edge detection identifies boundaries in images where pixel intensity changes sharply. Our module implements <strong>six edge detection algorithms</strong>, each with different mathematical foundations.</p>
+        <h3>Sobel Operator</h3>
+        <p>The Sobel operator computes the first derivative (gradient) of image intensity using two 3&times;3 convolution kernels:</p>
+        <div class="formula-block">G = &radic;(Gx&sup2; + Gy&sup2;) &nbsp;&asymp;&nbsp; |Gx| + |Gy|</div>
+        <div class="code-block" data-lang="Python">
+<pre><code>gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+<span class="cm"># Sobel gradients in X and Y directions</span>
+sobel_x = cv2.Sobel(gray, cv2.CV_64F, <span class="num">1</span>, <span class="num">0</span>, ksize=<span class="num">3</span>)
+sobel_y = cv2.Sobel(gray, cv2.CV_64F, <span class="num">0</span>, <span class="num">1</span>, ksize=<span class="num">3</span>)
+
+<span class="cm"># Combine into gradient magnitude</span>
+combined = cv2.addWeighted(
+    cv2.convertScaleAbs(sobel_x), <span class="num">0.5</span>,
+    cv2.convertScaleAbs(sobel_y), <span class="num">0.5</span>, <span class="num">0</span>)</code></pre>
+        </div>
+        <h3>Canny Edge Detector</h3>
+        <p>The Canny algorithm is a multi-stage process: (1) Gaussian smoothing, (2) gradient computation, (3) non-maximum suppression to thin edges, and (4) hysteresis thresholding.</p>
+        <div class="code-block" data-lang="Python">
+<pre><code><span class="cm"># Canny with low=100 and high=200 thresholds</span>
+edges = cv2.Canny(gray, <span class="num">100</span>, <span class="num">200</span>)
+
+<span class="cm"># Edge Overlay &mdash; draw detected edges on the original</span>
+output = image.copy()
+output[edges > <span class="num">0</span>] = (<span class="num">0</span>, <span class="num">255</span>, <span class="num">0</span>)  <span class="cm"># green overlay</span></code></pre>
+        </div>
+        <h3>Other Edge Detectors</h3>
+        <ul>
+            <li><strong>Laplacian:</strong> Second derivative &mdash; detects edges at zero crossings.</li>
+            <li><strong>Prewitt:</strong> Similar to Sobel but uses simpler, unweighted kernels.</li>
+            <li><strong>Roberts Cross:</strong> 2&times;2 diagonal kernels &mdash; fast but noise-sensitive.</li>
+            <li><strong>Scharr:</strong> Optimized Sobel with better rotational symmetry for 3&times;3 kernels.</li>
+        </ul>
+        <div class="image-grid">
+            <div class="image-showcase"><img src="outputs/canny/canny.jpg" alt="Canny"><div class="caption"><strong>Figure 3a:</strong> Canny Edge Detection</div></div>
+            <div class="image-showcase"><img src="outputs/sobel/sobel.jpg" alt="Sobel"><div class="caption"><strong>Figure 3b:</strong> Sobel Combined Gradient</div></div>
+        </div>
+        <div class="image-showcase">
+            <img src="outputs/canny/edge_overlay.jpg" alt="Edge Overlay">
+            <div class="caption"><strong>Figure 3c:</strong> Edge Overlay &mdash; Canny edges drawn in green on the original image</div>
+        </div>
+    </div>
+
+    <!-- 09. THRESHOLDING -->
+    <div class="section" id="thresholding">
+        <div class="section-header">
+            <div class="section-number">09</div>
+            <h2>Module 4 &mdash; Thresholding Techniques</h2>
+        </div>
+        <p>Thresholding is a fundamental segmentation technique that separates foreground from background by converting grayscale images into binary images.</p>
+        <h3>Global Thresholding</h3>
+        <div class="code-block" data-lang="Python">
+<pre><code><span class="cm"># Binary Threshold</span>
+_, binary = cv2.threshold(gray, <span class="num">127</span>, <span class="num">255</span>, cv2.THRESH_BINARY)
+
+<span class="cm"># Otsu's Method &mdash; automatic optimal threshold</span>
+_, otsu = cv2.threshold(gray, <span class="num">0</span>, <span class="num">255</span>, cv2.THRESH_BINARY + cv2.THRESH_OTSU)</code></pre>
+        </div>
+        <h3>Adaptive Thresholding &amp; Otsu</h3>
+        <p><strong>Adaptive thresholding</strong> computes a local threshold for each pixel based on its neighborhood. <strong>Otsu&rsquo;s algorithm</strong> automatically finds the threshold that minimizes intra-class variance.</p>
+        <div class="image-grid">
+            <div class="image-showcase"><img src="outputs/threshold/otsu.jpg" alt="Otsu"><div class="caption"><strong>Figure 4a:</strong> Otsu&rsquo;s Automatic Thresholding</div></div>
+            <div class="image-showcase"><img src="outputs/threshold/adaptive_gaussian.jpg" alt="Adaptive Gaussian"><div class="caption"><strong>Figure 4b:</strong> Adaptive Gaussian Thresholding</div></div>
+        </div>
+    </div>
+
+    <!-- 10. MORPHOLOGY -->
+    <div class="section" id="morphology">
+        <div class="section-header">
+            <div class="section-number">10</div>
+            <h2>Module 5 &mdash; Morphological Operations</h2>
+        </div>
+        <p>Morphological operations process images based on their shape using a <strong>structuring element</strong>. Our module implements all eight standard operations.</p>
+        <h3>Fundamental Operations</h3>
+        <ul>
+            <li><strong>Erosion:</strong> Shrinks foreground &mdash; removes small noise.</li>
+            <li><strong>Dilation:</strong> Expands foreground &mdash; fills small holes.</li>
+        </ul>
+        <h3>Compound Operations</h3>
+        <ul>
+            <li><strong>Opening (Erosion &rarr; Dilation):</strong> Removes noise while preserving objects.</li>
+            <li><strong>Closing (Dilation &rarr; Erosion):</strong> Fills holes while preserving size.</li>
+            <li><strong>Gradient (Dilation &minus; Erosion):</strong> Extracts object boundaries.</li>
+            <li><strong>Top Hat / Black Hat:</strong> Reveals small bright/dark features.</li>
+            <li><strong>Hit-or-Miss:</strong> Finds specific pixel patterns.</li>
+        </ul>
+        <div class="code-block" data-lang="Python">
+<pre><code>kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (<span class="num">5</span>, <span class="num">5</span>))
+eroded = cv2.erode(gray, kernel, iterations=<span class="num">1</span>)
+dilated = cv2.dilate(gray, kernel, iterations=<span class="num">1</span>)
+gradient = cv2.morphologyEx(gray, cv2.MORPH_GRADIENT, kernel)</code></pre>
+        </div>
+        <div class="image-grid-3">
+            <div class="image-showcase"><img src="outputs/morphology/erosion.jpg" alt="Erosion"><div class="caption"><strong>Erosion</strong></div></div>
+            <div class="image-showcase"><img src="outputs/morphology/dilation.jpg" alt="Dilation"><div class="caption"><strong>Dilation</strong></div></div>
+            <div class="image-showcase"><img src="outputs/morphology/gradient.jpg" alt="Gradient"><div class="caption"><strong>Gradient</strong></div></div>
+        </div>
+    </div>
+
+    <!-- 11. CONTOURS -->
+    <div class="section" id="contours">
+        <div class="section-header">
+            <div class="section-number">11</div>
+            <h2>Module 6 &mdash; Contour Detection &amp; Analysis</h2>
+        </div>
+        <p>Contours are curves joining continuous points along a boundary. They are the primary tool for <strong>shape analysis and object recognition</strong>. Our module performs full analysis: finding contours, computing geometric properties (area, perimeter, centroid, circularity), and generating six geometric visualizations.</p>
+        <div class="code-block" data-lang="Python">
+<pre><code>contours, hierarchy = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+<span class="cm"># Compute circularity</span>
+area = cv2.contourArea(contour)
+perimeter = cv2.arcLength(contour, <span class="kw">True</span>)
+circularity = <span class="num">4</span> * np.pi * area / (perimeter ** <span class="num">2</span>)</code></pre>
+        </div>
+        <div class="image-grid">
+            <div class="image-showcase"><img src="outputs/contour/contours_drawn.jpg" alt="Contours"><div class="caption"><strong>Figure 6a:</strong> Detected contours</div></div>
+            <div class="image-showcase"><img src="outputs/contour/bounding_boxes.jpg" alt="Bounding Boxes"><div class="caption"><strong>Figure 6b:</strong> Bounding boxes</div></div>
+        </div>
+    </div>
+
+    <!-- 12. COLOR ANALYSIS -->
+    <div class="section" id="color-analysis">
+        <div class="section-header">
+            <div class="section-number">12</div>
+            <h2>Module 7 &mdash; Color Analysis</h2>
+        </div>
+        <p>We use <strong>K-Means clustering</strong> to identify dominant colors. Every pixel is treated as a 3D point in BGR color space, and K-Means partitions all pixels into <em>k</em> clusters. Additional analyses include color temperature, saturation, and channel distribution.</p>
+        <div class="code-block" data-lang="Python">
+<pre><code>pixels = image.reshape(-<span class="num">1</span>, <span class="num">3</span>).astype(np.float32)
+criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, <span class="num">100</span>, <span class="num">0.2</span>)
+_, labels, centers = cv2.kmeans(pixels, k=<span class="num">5</span>, bestLabels=<span class="kw">None</span>,
+                                criteria=criteria, attempts=<span class="num">10</span>,
+                                flags=cv2.KMEANS_RANDOM_CENTERS)</code></pre>
+        </div>
+        <div class="image-showcase">
+            <img src="outputs/color/palette.jpg" alt="Color Palette">
+            <div class="caption"><strong>Figure 7:</strong> Extracted dominant color palette</div>
+        </div>
+    </div>
+
+    <!-- 13. METRICS -->
+    <div class="section" id="metrics">
+        <div class="section-header">
+            <div class="section-number">13</div>
+            <h2>Module 8 &mdash; Image Quality Metrics</h2>
+        </div>
+        <p>Our metrics module computes <strong>11 statistical and quality metrics</strong> including brightness, contrast, sharpness, entropy, PSNR, SSIM, and color distribution.</p>
+        <table>
+            <thead><tr><th>Metric</th><th>Description</th><th>What It Tells Us</th></tr></thead>
+            <tbody>
+                <tr><td>Brightness</td><td>Mean pixel intensity</td><td>Overall lightness/darkness</td></tr>
+                <tr><td>Contrast</td><td>Std deviation of intensity</td><td>Dynamic range</td></tr>
+                <tr><td>Sharpness</td><td>Variance of Laplacian</td><td>Edge definition</td></tr>
+                <tr><td>Entropy</td><td>Shannon entropy</td><td>Information content</td></tr>
+                <tr><td>PSNR</td><td>Peak Signal-to-Noise Ratio</td><td>Reconstruction quality (dB)</td></tr>
+                <tr><td>SSIM</td><td>Structural Similarity</td><td>Perceptual quality</td></tr>
+            </tbody>
+        </table>
+        <div class="formula-block">PSNR = 20 &times; log&#x2081;&#x2080;(MAX / &radic;MSE) &nbsp;&nbsp;|&nbsp;&nbsp; SSIM = (2&mu;&#x2081;&mu;&#x2082; + C&#x2081;)(2&sigma;&#x2081;&#x2082; + C&#x2082;) / (&mu;&#x2081;&sup2; + &mu;&#x2082;&sup2; + C&#x2081;)(&sigma;&#x2081;&sup2; + &sigma;&#x2082;&sup2; + C&#x2082;)</div>
+        <div class="image-showcase">
+            <img src="outputs/comparison/metrics_overlay.png" alt="Metrics Overlay">
+            <div class="caption"><strong>Figure 8:</strong> Image Analysis Summary with computed metrics panel</div>
+        </div>
+    </div>
+
+    <!-- 14. VISUALIZATION -->
+    <div class="section" id="visualization">
+        <div class="section-header">
+            <div class="section-number">14</div>
+            <h2>Visualization &amp; Dashboards</h2>
+        </div>
+        <p>The visualization module uses <strong>Matplotlib</strong> with a custom professional dark theme. All plots use carefully chosen accent colors.</p>
+        <div class="image-grid">
+            <div class="image-showcase"><img src="outputs/comparison/rgb_histogram.png" alt="RGB Histogram"><div class="caption"><strong>Figure 9a:</strong> RGB Histogram</div></div>
+            <div class="image-showcase"><img src="outputs/comparison/gray_histogram.png" alt="Grayscale Histogram"><div class="caption"><strong>Figure 9b:</strong> Grayscale Histogram</div></div>
+        </div>
+        <h3>Processing Dashboard</h3>
+        <div class="image-showcase">
+            <img src="outputs/comparison/dashboard.png" alt="Processing Dashboard">
+            <div class="caption"><strong>Figure 10:</strong> Complete Processing Dashboard &mdash; all 40+ operations in a single dark-themed grid</div>
+        </div>
+    </div>
+
+    <!-- 15. EXECUTION -->
+    <div class="section" id="execution">
+        <div class="section-header">
+            <div class="section-number">15</div>
+            <h2>Execution &amp; Results</h2>
+        </div>
+        <div class="code-block" data-lang="Terminal">
+<pre><code><span class="cm"># Install dependencies</span>
+pip install -r requirements.txt
+
+<span class="cm"># Process a single image with all operations</span>
+python app.py --input images/Street1.jpg
+
+<span class="cm"># Process with selective operations</span>
+python app.py -i images/Street1.jpg --operations preprocessing,edge_detection,metrics
+
+<span class="cm"># Batch process all images in a directory</span>
+python app.py --batch images/</code></pre>
+        </div>
+        <h3>Output Structure</h3>
+        <div class="code-block" data-lang="Output">
+<pre><code>outputs/
+&#x251C;&#x2500;&#x2500; grayscale/    &rarr; 1 image    &#x251C;&#x2500;&#x2500; sharpen/     &rarr; 11 images
+&#x251C;&#x2500;&#x2500; histogram/   &rarr; 5 images   &#x251C;&#x2500;&#x2500; sobel/       &rarr; 6 images
+&#x251C;&#x2500;&#x2500; gaussian/    &rarr; 2 images   &#x251C;&#x2500;&#x2500; canny/       &rarr; 2 images
+&#x251C;&#x2500;&#x2500; median/      &rarr; 1 image    &#x251C;&#x2500;&#x2500; threshold/   &rarr; 8 images
+&#x251C;&#x2500;&#x2500; bilateral/   &rarr; 1 image    &#x251C;&#x2500;&#x2500; morphology/  &rarr; 8 images
+&#x251C;&#x2500;&#x2500; contour/     &rarr; 6 images   &#x251C;&#x2500;&#x2500; color/       &rarr; 1 image
+&#x2514;&#x2500;&#x2500; comparison/  &rarr; 5 images   <strong>Total: 53+ processed images</strong></code></pre>
+        </div>
+        <div class="image-showcase">
+            <img src="images/Street1.jpg" alt="Input Image">
+            <div class="caption"><strong>Figure 11:</strong> Input test image &mdash; Street1.jpg</div>
+        </div>
+    </div>
+
+    <!-- 16. SOURCE CODE -->
+    <div class="section" id="source-code">
+        <div class="section-header">
+            <div class="section-number">16</div>
+            <h2>Source Code Repository</h2>
+        </div>
+        <p>The complete source code for VisionPro Studio is hosted on GitHub:</p>
+        <div class="github-placeholder">
+            <a href="#">&#x1F517; GitHub Repository Link</a>
+            <p>[ Insert your GitHub repository URL here ]</p>
+        </div>
+        <div class="info-card accent-amber">
+            <p>&#x26A0;&#xFE0F; <strong>Note:</strong> Replace the placeholder above with your actual GitHub repository link before submission.</p>
+        </div>
+    </div>
+
+    <!-- 17. CONCLUSION -->
+    <div class="section" id="conclusion">
+        <div class="section-header">
+            <div class="section-number">17</div>
+            <h2>Conclusion &amp; Learnings</h2>
+        </div>
+        <p>Developing VisionPro Studio has been one of the most enriching experiences of our academic journey. What started as a course project grew into a comprehensive toolkit that brings together everything we learned in <strong>Prof. Ashraf Nijam&rsquo;s</strong> AI Vision course &mdash; from the mathematical foundations of convolution kernels to the practical challenges of building reliable image processing pipelines.</p>
+        <h3>Key Technical Learnings</h3>
+        <div class="info-card highlight">
+            <ul>
+                <li><strong>Algorithm Depth:</strong> Implementing 40+ operations deepened our understanding of how classical computer vision algorithms work at the pixel level &mdash; not just calling library functions, but understanding the mathematics behind Sobel derivatives, Canny&rsquo;s hysteresis, Otsu&rsquo;s variance optimization, and K-Means clustering.</li>
+                <li><strong>Software Engineering:</strong> Building a modular, pipeline-based architecture taught us real-world skills in code organization, error handling, timing instrumentation, and configuration management.</li>
+                <li><strong>Visual Thinking:</strong> Generating side-by-side comparisons and comprehensive dashboards gave us intuition about how different algorithms behave &mdash; something textbooks alone cannot provide.</li>
+                <li><strong>Quantitative Analysis:</strong> Computing metrics like PSNR, SSIM, and entropy showed us how to objectively evaluate image quality, a critical skill for research and production systems.</li>
+            </ul>
+        </div>
+        <h3>Personal Reflection</h3>
+        <p>Beyond the technical skills, this project represents a milestone in our Erasmus+ experience. Collaborating across cultures &mdash; Sampath from India and Mario from Albania &mdash; in a Spanish university, we experienced firsthand how diverse perspectives strengthen problem-solving. Each of us brought different strengths to the table, and the final product is far richer because of that collaboration.</p>
+        <p>We are deeply grateful to <strong>Prof. Ashraf Nijam</strong> for his inspiring teaching and mentorship throughout this course. His lectures transformed abstract algorithms into tangible, visual tools that we can now apply with confidence. This project &mdash; and the Erasmus+ experience at the Universidad de Almer&iacute;a &mdash; will remain a proud milestone in our careers.</p>
+        <div class="info-card accent-green">
+            <p>&#x1F393; <strong>VisionPro Studio</strong> is not just a project &mdash; it is a testament to what international academic collaboration, curiosity, and dedication can achieve. Built with &#x1F40D; Python, &#x1F4F7; OpenCV, and a lot of &#x2764;&#xFE0F;.</p>
+        </div>
+    </div>
+
+    <!-- 18. REFERENCES -->
+    <div class="section" id="references">
+        <div class="section-header">
+            <div class="section-number">18</div>
+            <h2>References</h2>
+        </div>
+        <ol>
+            <li>Bradski, G. (2000). <em>The OpenCV Library.</em> Dr. Dobb&rsquo;s Journal of Software Tools.</li>
+            <li>Gonzalez, R. C., &amp; Woods, R. E. (2018). <em>Digital Image Processing</em> (4th ed.). Pearson.</li>
+            <li>Szeliski, R. (2022). <em>Computer Vision: Algorithms and Applications</em> (2nd ed.). Springer.</li>
+            <li>Canny, J. (1986). A Computational Approach to Edge Detection. <em>IEEE TPAMI,</em> PAMI-8(6), 679&ndash;698.</li>
+            <li>Otsu, N. (1979). A Threshold Selection Method from Gray-Level Histograms. <em>IEEE Trans. SMC,</em> 9(1), 62&ndash;66.</li>
+            <li>Wang, Z., Bovik, A. C., Sheikh, H. R., &amp; Simoncelli, E. P. (2004). Image Quality Assessment: From Error Visibility to Structural Similarity. <em>IEEE TIP,</em> 13(4), 600&ndash;612.</li>
+            <li>OpenCV Documentation &mdash; <a href="https://docs.opencv.org/" style="color: var(--accent-blue);">https://docs.opencv.org/</a></li>
+            <li>NumPy Documentation &mdash; <a href="https://numpy.org/doc/" style="color: var(--accent-blue);">https://numpy.org/doc/</a></li>
+            <li>Matplotlib Documentation &mdash; <a href="https://matplotlib.org/stable/" style="color: var(--accent-blue);">https://matplotlib.org/stable/</a></li>
+        </ol>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="report-footer">
+        <p>
+            <strong>VisionPro Studio</strong> &mdash; Project Report<br>
+            AI Vision with Python: An Introduction to Pattern Recognition &amp; Image Processing<br>
+            Universidad de Almer&iacute;a, Spain &middot; Erasmus+ Student Mobility Program &middot; July 2026
+        </p>
+        <p style="margin-top: 16px;">
+            Sampath Malleboina &amp; Mario &middot; Supervised by Prof. Ashraf Nijam
+        </p>
+    </div>
+
+</div>
+
+<!-- ============================================ -->
+<!-- JAVASCRIPT                                   -->
+<!-- ============================================ -->
+<script>
+    // Show floating nav after scrolling past cover page
+    const nav = document.getElementById('floatingNav');
+    const cover = document.getElementById('cover');
+
+    const observer = new IntersectionObserver(
+        ([entry]) => {
+            if (!entry.isIntersecting) {
+                nav.classList.add('visible');
+            } else {
+                nav.classList.remove('visible');
+            }
+        },
+        { threshold: 0.1 }
+    );
+
+    observer.observe(cover);
+</script>
+
+</body>
+</html>
