@@ -16,7 +16,7 @@ batch processing, multi-format reports, and beautiful visualizations.*
 
 ---
 
-## ✨ Features
+##  Features
 
 | Category | Operations |
 |:---------|:-----------|
@@ -33,7 +33,7 @@ batch processing, multi-format reports, and beautiful visualizations.*
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 VisionPro-Studio/
@@ -84,7 +84,7 @@ VisionPro-Studio/
 
 ---
 
-## 🚀 Installation
+##  Installation
 
 ### Prerequisites
 
@@ -110,7 +110,7 @@ pip install -e ".[dev]"
 
 ---
 
-## 💻 Usage
+##  Usage
 
 ### Single Image Processing
 
@@ -173,7 +173,7 @@ python app.py --version
 
 ---
 
-## 🧪 Testing
+##  Testing
 
 ```bash
 # Run all tests
@@ -188,7 +188,7 @@ python -m pytest tests/ --tb=short
 
 ---
 
-## ⚙️ Configuration
+##  Configuration
 
 ### CLI Arguments
 
@@ -232,7 +232,7 @@ You can also load settings from a JSON file:
 
 ---
 
-## 📊 Output Examples
+##  Output Examples
 
 After processing, results are organized in `outputs/`:
 
@@ -262,18 +262,18 @@ outputs/
 
 ---
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 👥 Author
+##  Author
 
 **VisionPro Studio Team**
 
 ---
 
 <div align="center">
-<sub>Built with ❤️ using Python, OpenCV, NumPy, and Matplotlib</sub>
+<sub>Built with using Python, OpenCV, NumPy, and Matplotlib</sub>
 </div>
